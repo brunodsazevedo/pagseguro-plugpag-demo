@@ -2,6 +2,7 @@
   "expo": {
     "name": "pagseguro-plugpag-demo",
     "slug": "pagseguro-plugpag-demo",
+    "scheme": "pagseguro-plugpag-demo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,11 +25,9 @@
       },
       "package": "com.brunodsazevedo.pagseguroplugpagdemo"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
     "plugins": [
-      "react-native-pagseguro-plugpag"
+      "react-native-pagseguro-plugpag",
+      "expo-router"
     ]
   }
 }
