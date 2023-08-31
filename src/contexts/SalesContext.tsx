@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useState } from 'react'
-import { PaymentTransactionResponseProps } from 'react-native-pagseguro-plugpag'
+import { PaymentTransactionResponseProps, PaymentTypes, InstallmentTypes } from 'react-native-pagseguro-plugpag'
 
 type SalesProviderProps = {
   children: ReactNode
@@ -7,14 +7,24 @@ type SalesProviderProps = {
 
 type SalesContextProps = {
   sales: PaymentTransactionResponseProps[]
-  onAddSale: (data: PaymentTransactionResponseProps) => void;
+  cart: CartProps
+  onAddSale: (data: PaymentTransactionResponseProps) => void
   onRemoveSale: (transactionId: string) => void
+  onUpdateCart: (data: CartProps) => void
+}
+
+type CartProps = {
+  amount: number
+  installments: number
+  paymentType: PaymentTypes
+  installmentType: InstallmentTypes
 }
 
 export const SalesContext = createContext({} as SalesContextProps)
 
 export function SalesProvider({ children }: SalesProviderProps) {
   const [sales, setSales] = useState<PaymentTransactionResponseProps[]>([])
+  const [cart, setCart] = useState<CartProps>({} as CartProps)
 
   function onAddSale(data: PaymentTransactionResponseProps) {
     setSales([...sales, data])
@@ -26,11 +36,17 @@ export function SalesProvider({ children }: SalesProviderProps) {
     setSales(salesUpdated)
   }
 
+  function onUpdateCart(dataCartUpdated: CartProps) {
+    setCart(dataCartUpdated)
+  }
+
   return (
     <SalesContext.Provider value={{
       sales,
+      cart,
       onAddSale,
-      onRemoveSale
+      onRemoveSale,
+      onUpdateCart,
     }}>
       {children}
     </SalesContext.Provider>
