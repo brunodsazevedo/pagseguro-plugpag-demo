@@ -76,7 +76,7 @@ export default function MakePayment() {
 
   useEffect(() => {
     console.log(transactionEvent);
-    setStatusMessage(transactionEvent.message ?? 'PROCESSANDO')
+    setStatusMessage(transactionEvent.message)
 
     if (transactionEvent.message === 'INSIRA O CARTÃO') {
       setHandleType('userInsertCard')
@@ -118,7 +118,7 @@ export default function MakePayment() {
   return (
     <SafeAreaView className='flex-1 bg-white p-6'>
       <Text className="text-center uppercase text-lg text-gray-900">
-        {statusMessage}
+        {statusMessage ?? 'Processando'}
       </Text>
 
       <View className="flex-1 items-center justify-center mb-10">
