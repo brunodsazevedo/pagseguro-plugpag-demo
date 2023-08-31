@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { useTransactionPaymentEvent, doPayment, PaymentTransactionResponseProps } from 'react-native-pagseguro-plugpag'
+import { useTransactionPaymentEvent, refundPayment, PaymentTransactionResponseProps } from 'react-native-pagseguro-plugpag'
 import LottieView from 'lottie-react-native';
 
 import { SafeAreaView } from '@components/SafeAreaView';
@@ -15,9 +15,8 @@ import ErrorAnimation from '@assets/error-animation.json';
 import InsertCardAnimation from '@assets/insert-credit-card-animation.json';
 import InsertPasswordAnimation from '@assets/insert-password-animation.json';
 
-export default function MakePayment() {
+export default function MakeRefund() {
   const [statusMessage, setStatusMessage] = useState('Processando')
-  const [saleData, setSaleData] = useState<PaymentTransactionResponseProps>({} as PaymentTransactionResponseProps)
   const [isProcessing, setIsProcessing] = useState(true)
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
   const [handleType, setHandleType] = useState<
@@ -28,16 +27,13 @@ export default function MakePayment() {
     | 'success'
   >('pos')
 
+  const { sales, onRemoveSale } = useSales()
   const transactionEvent = useTransactionPaymentEvent()
-  const { cart, onAddSale, onClearCart } = useSales()
 
-  function handleChangePaymentMethod() {
-    router.push('/newSale/choosePaymentType')
-  }
+  const lastSale = sales[sales.length - 1];
 
   function handleFinish() {
-    onAddSale(saleData)
-
+    onRemoveSale(lastSale.transactionId)
     router.push('/')
   }
 
@@ -45,13 +41,10 @@ export default function MakePayment() {
     try {
       setIsProcessing(true);
 
-      const data = await doPayment({
-        amount: cart.amount,
-        installments: cart.installments,
-        installmentType: cart.installmentType,
-        type: cart.paymentType,
+      const data = await refundPayment({
         printReceipt: true,
-        userReference: 'pagseguro-plugpag-test'
+        transactionId: lastSale.transactionId,
+        transactionCode: lastSale.transactionCode,
       })
 
       console.log(data);
@@ -59,12 +52,9 @@ export default function MakePayment() {
       if(data.result !== 0) {
         throw data
       }
-
-      setSaleData(data)
-
+      
       setStatusMessage('TRANSAÇÃO CONCLUÍDA')
       setIsPaymentSuccessful(true);
-      onClearCart();
     } catch (error) {
       console.log(error);
       if (error && typeof error === 'object' && 'errorMessage' in error) {
@@ -189,11 +179,7 @@ export default function MakePayment() {
 
       <View className="space-y-4">
         {!isProcessing && !isPaymentSuccessful && (
-          <>
-            <Button title="Tentar novamente" className="mb-4" onPress={onPayment} />
-
-            <Button title="Alterar método de pagamento" onPress={handleChangePaymentMethod} />
-          </>
+          <Button title="Tentar novamente" className="mb-4" onPress={onPayment} />
         )}
 
         {!isProcessing && isPaymentSuccessful && (

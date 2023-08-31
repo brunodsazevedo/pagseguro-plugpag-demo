@@ -11,6 +11,7 @@ type SalesContextProps = {
   onAddSale: (data: PaymentTransactionResponseProps) => void
   onRemoveSale: (transactionId: string) => void
   onUpdateCart: (data: CartProps) => void
+  onClearCart: () => void
 }
 
 type CartProps = {
@@ -40,6 +41,10 @@ export function SalesProvider({ children }: SalesProviderProps) {
     setCart(dataCartUpdated)
   }
 
+  function onClearCart() {
+    setCart({} as CartProps)
+  }
+
   return (
     <SalesContext.Provider value={{
       sales,
@@ -47,6 +52,7 @@ export function SalesProvider({ children }: SalesProviderProps) {
       onAddSale,
       onRemoveSale,
       onUpdateCart,
+      onClearCart,
     }}>
       {children}
     </SalesContext.Provider>

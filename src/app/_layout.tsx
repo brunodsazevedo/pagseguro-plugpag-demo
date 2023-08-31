@@ -1,3 +1,6 @@
+import 'intl'
+import 'intl/locale-data/jsonp/pt-BR'
+
 import { useEffect } from 'react'
 import { Stack, router } from 'expo-router'
 import { StatusBar } from 'react-native'
